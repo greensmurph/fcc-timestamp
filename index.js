@@ -19,11 +19,13 @@ app.get("/", function (req, res) {
 });
 
 // your first API endpoint... 
-app.get("/api/:date", function (req, res) {
+app.get("/api/:date?", function (req, res) {
   const isDateValid = (dateStr) => !isNaN(new Date(dateStr));
   const isValidUTC = isDateValid(req.params.date);
   const isValidUnix = isDateValid(Number(req.params.date));
   let response = {};
+
+  console.log('params length: ', req.params.date);
 
   if (isValidUTC) {
     response.unix = new Date(req.params.date).getTime();
@@ -31,6 +33,9 @@ app.get("/api/:date", function (req, res) {
   } else if (isValidUnix) {
     response.unix = new Date(Number(req.params.date)).getTime();
     response.utc = new Date(Number(req.params.date)).toUTCString();
+  } else if (req.params.date == undefined || req.params.date.length < 1) {
+    response.unix = new Date().getTime();
+    response.utc = new Date().toUTCString();
   } else {
     response.error = "Invalid Date";
   }
